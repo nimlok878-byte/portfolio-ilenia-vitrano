@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inserisci Immagini — Portfolio Ilenia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@300;400&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0d0d0d; --paper: #f5f0e8; --cream: #ede8dc;
+      --rust: #c8502a; --muted: #8a857a;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--paper);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--ink);
+      padding: 60px;
+      min-height: 100vh;
+    }
+
+    header {
+      margin-bottom: 60px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+      padding-bottom: 32px;
+    }
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.2em;
+      color: var(--rust);
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      font-weight: 300;
+      line-height: 1;
+    }
+    h1 em { font-style: italic; color: var(--rust); }
+    .subtitle {
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .slots {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-bottom: 60px;
+    }
+
+    .slot {
+      background: var(--cream);
+      border: 2px dashed rgba(0,0,0,0.15);
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      aspect-ratio: 4/3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .slot:hover { border-color: var(--rust); background: #e8e0cf; }
+    .slot.drag-over { border-color: var(--rust); background: #e0d5c0; border-style: solid; }
+    .slot.has-image { border-style: solid; border-color: transparent; }
+
+    .slot-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--rust);
+      margin-bottom: 8px;
+    }
+    .slot-icon { font-size: 28px; opacity: 0.3; margin-bottom: 10px; }
+    .slot-hint {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.8;
+    }
+    .slot-path {
+      font-size: 8px;
+      color: var(--rust);
+      margin-top: 8px;
+      opacity: 0.7;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .slot-preview {
+      position: absolute; inset: 0;
+      display: none;
+      flex-direction: column;
+    }
+    .slot-preview img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .slot-preview-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(13,13,13,0.85);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .slot-preview-name {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: var(--paper);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 160px;
+    }
+    .slot-remove {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rust);
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: 'DM Mono', monospace;
+      flex-shrink: 0;
+    }
+    .slot-remove:hover { text-decoration: underline; }
+    .slot.has-image .slot-preview { display: flex; }
+    .slot.has-image > :not(.slot-preview) { display: none; }
+
+    input[type="file"] { display: none; }
+
+    /* OUTPUT SECTION */
+    .output-section {
+      margin-top: 8px;
+    }
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .output-title {
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--rust);
+    }
+    .copy-btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      background: var(--ink);
+      color: var(--paper);
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover { background: var(--rust); }
+    .copy-btn.copied { background: #4a7a4a; }
+
+    .code-block {
+      background: var(--ink);
+      color: #a8c8a0;
+      padding: 28px 32px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      line-height: 1.9;
+      white-space: pre;
+      overflow-x: auto;
+      border-left: 3px solid var(--rust);
+      position: relative;
+    }
+    .code-comment { color: rgba(255,255,255,0.25); }
+    .code-tag { color: #c8a87a; }
+    .code-attr { color: #87a8c8; }
+    .code-val { color: #a8c8a0; }
+    .code-placeholder { color: rgba(255,255,255,0.15); font-style: italic; }
+
+    .instructions {
+      margin-top: 60px;
+      padding-top: 40px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 2px;
+    }
+    .step {
+      background: var(--cream);
+      padding: 32px 28px;
+      border-top: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .step:hover { border-color: var(--rust); }
+    .step-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 48px;
+      font-weight: 300;
+      color: var(--rust);
+      opacity: 0.3;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .step-title {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .step-desc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .step-desc code {
+      background: rgba(0,0,0,0.07);
+      padding: 1px 6px;
+      font-size: 10px;
+      color: var(--rust);
+    }
+
+    .alert {
+      background: var(--ink);
+      color: rgba(245,240,232,0.7);
+      padding: 16px 24px;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      line-height: 1.8;
+      margin-bottom: 2px;
+    }
+    .alert strong { color: var(--rust); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <p class="logo">IV — Portfolio Tool</p>
+    <h1>Inserisci le tue <em>immagini</em></h1>
+    <p class="subtitle">Trascina o clicca · il codice HTML si genera in automatico</p>
+  </header>
+
+  <div class="alert">
+    <strong>Come funziona:</strong> trascina o clicca su ogni slot per selezionare l'immagine dal tuo computer.
+    Il codice HTML si aggiorna in tempo reale — copialo e incollalo nell'<strong>index.html</strong> del portfolio.
+  </div>
+  <div class="alert" style="margin-bottom: 32px; border-left: 3px solid var(--rust);">
+    <strong>Importante:</strong> dopo aver copiato il codice, salva anche le immagini nella cartella corretta del portfolio
+    (il percorso esatto è indicato in ogni slot).
+  </div>
+
+  <div class="slots">
+
+    <!-- SLOT 1: FOTO HERO -->
+    <div class="slot" id="slot-hero" onclick="triggerInput('input-hero')" ondrop="handleDrop(event,'hero')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+      <p class="slot-label">Foto Hero</p>
+      <div class="slot-icon">◎</div>
+      <p class="slot-hint">Foto profilo<br>lato destro hero</p>
+      <p class="slot-path">assets/images/hero/<br>hero-ilenia.jpg</p>
+      <div class="slot-preview" id="preview-hero">
+        <img id="img-hero" src="" alt="">
+        <div class="slot-preview-bar">
+          <span class="slot-preview-name" id="name-hero"></span>
+          <button class="slot-remove" onclick="removeImage(event,'hero')">Rimuovi ✕</button>
+        </div>
+      </div>
+      <input type="file" id="input-hero" accept="image/*" onchange="handleFile(this,'hero')">
+    </div>
+
+    <!-- SLOT 2: SCREENSHOT ROOOT -->
+    <div class="slot" id="slot-rooot" onclick="triggerInput('input-rooot')" ondrop="handleDrop(event,'rooot')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+      <p class="slot-label">Screenshot ROOOT</p>
+      <div class="slot-icon">🌿</div>
+      <p class="slot-hint">Immagine card<br>progetto ROOOT</p>
+      <p class="slot-path">assets/images/projects/<br>rooot-preview.jpg</p>
+      <div class="slot-preview" id="preview-rooot">
+        <img id="img-rooot" src="" alt="">
+        <div class="slot-preview-bar">
+          <span class="slot-preview-name" id="name-rooot"></span>
+          <button class="slot-remove" onclick="removeImage(event,'rooot')">Rimuovi ✕</button>
+        </div>
+      </div>
+      <input type="file" id="input-rooot" accept="image/*" onchange="handleFile(this,'rooot')">
+    </div>
+
+    <!-- SLOT 3: SCREENSHOT CAFFÈ MATTO -->
+    <div class="slot" id="slot-caffe" onclick="triggerInput('input-caffe')" ondrop="handleDrop(event,'caffe')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+      <p class="slot-label">Screenshot Caffè Matto</p>
+      <div class="slot-icon">☕</div>
+      <p class="slot-hint">Immagine card<br>progetto Caffè Matto</p>
+      <p class="slot-path">assets/images/projects/<br>caffe-matto-preview.jpg</p>
+      <div class="slot-preview" id="preview-caffe">
+        <img id="img-caffe" src="" alt="">
+        <div class="slot-preview-bar">
+          <span class="slot-preview-name" id="name-caffe"></span>
+          <button class="slot-remove" onclick="removeImage(event,'caffe')">Rimuovi ✕</button>
+        </div>
+      </div>
+      <input type="file" id="input-caffe" accept="image/*" onchange="handleFile(this,'caffe')">
+    </div>
+
+  </div>
+
+  <!-- OUTPUT CODE -->
+  <div class="output-section">
+    <div class="output-header">
+      <span class="output-title">Codice HTML generato — incolla in index.html</span>
+      <button class="copy-btn" id="copy-btn" onclick="copyCode()">Copia tutto ↗</button>
+    </div>
+    <div class="code-block" id="code-output"></div>
+  </div>
+
+  <!-- ISTRUZIONI -->
+  <div class="instructions">
+    <div class="step">
+      <div class="step-num">01</div>
+      <p class="step-title">Seleziona le immagini</p>
+      <p class="step-desc">Clicca su ogni slot o trascina l'immagine direttamente. Puoi usare JPG, PNG o WebP.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <p class="step-title">Copia il codice</p>
+      <p class="step-desc">Premi "Copia tutto" e incolla il codice generato nell'<code>index.html</code>, sostituendo i blocchi <code>placeholder</code> corrispondenti.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <p class="step-title">Salva le immagini</p>
+      <p class="step-desc">Copia anche i file immagine nelle cartelle giuste:<br>
+        <code>assets/images/hero/</code><br>
+        <code>assets/images/projects/</code>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Stato immagini
+    const state = { hero: null, rooot: null, caffe: null };
+
+    const config = {
+      hero: {
+        path: 'assets/images/hero/hero-ilenia.jpg',
+        alt: 'Ilenia Vitrano',
+        wrapClass: 'hero-image-wrap',
+        placeholderClass: 'hero-placeholder',
+      },
+      rooot: {
+        path: 'assets/images/projects/rooot-preview.jpg',
+        alt: 'ROOOT — Sistema di Gestione Ordini',
+        wrapClass: 'project-visual',
+        placeholderClass: 'proj-placeholder proj-rooot',
+      },
+      caffe: {
+        path: 'assets/images/projects/caffe-matto-preview.jpg',
+        alt: 'Caffè Matto — Brand Strategy',
+        wrapClass: 'project-visual',
+        placeholderClass: 'proj-placeholder proj-caffe',
+      },
+    };
+
+    function triggerInput(id) {
+      document.getElementById(id).click();
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('drag-over');
+    }
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+    function handleDrop(e, key) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) loadImage(file, key);
+    }
+    function handleFile(input, key) {
+      if (input.files[0]) loadImage(input.files[0], key);
+    }
+
+    function loadImage(file, key) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        state[key] = { src: e.target.result, name: file.name };
+        document.getElementById('img-' + key).src = e.target.result;
+        document.getElementById('name-' + key).textContent = file.name;
+        document.getElementById('slot-' + key).classList.add('has-image');
+        renderCode();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeImage(e, key) {
+      e.stopPropagation();
+      state[key] = null;
+      document.getElementById('img-' + key).src = '';
+      document.getElementById('slot-' + key).classList.remove('has-image');
+      document.getElementById('input-' + key).value = '';
+      renderCode();
+    }
+
+    function renderCode() {
+      const lines = [];
+
+      // ── HERO ──
+      lines.push('<!-- ══ FOTO HERO ══════════════════════════════ -->');
+      lines.push('<!-- Sostituisce il blocco .hero-image-wrap in index.html -->');
+      lines.push('');
+      if (state.hero) {
+        lines.push('<div class="hero-image-wrap">');
+        lines.push(`  <img src="${config.hero.path}" alt="${config.hero.alt}">`);
+        lines.push('</div>');
+        lines.push('<div class="hero-overlay-text">ILENIA</div>');
+      } else {
+        lines.push('<!-- ⚠ Nessuna immagine selezionata per l\'hero →');
+        lines.push('<!-- Quando carichi la foto, qui apparirà il codice pronto -->');
+      }
+
+      lines.push('');
+      lines.push('');
+
+      // ── ROOOT ──
+      lines.push('<!-- ══ PROGETTO ROOOT ════════════════════════ -->');
+      lines.push('<!-- Sostituisce il blocco .project-visual della card ROOOT -->');
+      lines.push('');
+      if (state.rooot) {
+        lines.push('<div class="project-visual">');
+        lines.push(`  <img src="${config.rooot.path}" alt="${config.rooot.alt}">`);
+        lines.push('</div>');
+      } else {
+        lines.push('<!-- ⚠ Nessuna immagine selezionata per ROOOT -->');
+      }
+
+      lines.push('');
+      lines.push('');
+
+      // ── CAFFÈ MATTO ──
+      lines.push('<!-- ══ PROGETTO CAFFÈ MATTO ══════════════════ -->');
+      lines.push('<!-- Sostituisce il blocco .project-visual della card Caffè Matto -->');
+      lines.push('');
+      if (state.caffe) {
+        lines.push('<div class="project-visual">');
+        lines.push(`  <img src="${config.caffe.path}" alt="${config.caffe.alt}">`);
+        lines.push('</div>');
+      } else {
+        lines.push('<!-- ⚠ Nessuna immagine selezionata per Caffè Matto -->');
+      }
+
+      lines.push('');
+      lines.push('');
+      lines.push('<!-- ══ ISTRUZIONI ════════════════════════════ -->');
+      lines.push('<!--');
+      lines.push('  1. Copia il blocco corrispondente (HERO / ROOOT / CAFFÈ MATTO)');
+      lines.push('  2. In index.html, trova il <div class="hero-image-wrap"> o');
+      lines.push('     <div class="project-visual"> relativo');
+      lines.push('  3. Sostituisci l\'intero blocco con il codice sopra');
+      lines.push('  4. Salva l\'immagine nella cartella indicata nel percorso src=""');
+      lines.push('-->');
+
+      document.getElementById('code-output').textContent = lines.join('\n');
+    }
+
+    function copyCode() {
+      const code = document.getElementById('code-output').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.textContent = 'Copiato ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copia tutto ↗';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Init
+    renderCode();
+  </script>
+</body>
+</html>

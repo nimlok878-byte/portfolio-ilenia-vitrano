@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Caffè Matto — Case Study · Ilenia Vitrano</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/icons/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@300;400&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/animations.css">
+  <style>
+    body{cursor:none}
+    .cs-hero{min-height:65vh;background:linear-gradient(160deg,#28180a,#4a2c0e);display:flex;flex-direction:column;justify-content:flex-end;padding:120px 60px 72px;position:relative;overflow:hidden}
+    .cs-hero::after{content:'CAFFE';position:absolute;bottom:-20px;right:-10px;font-family:'Bebas Neue',sans-serif;font-size:clamp(100px,16vw,200px);color:rgba(255,255,255,0.03);line-height:1;pointer-events:none}
+    .cs-back{position:fixed;top:28px;left:60px;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--paper);text-decoration:none;opacity:.55;transition:opacity .3s;z-index:50}
+    .cs-back:hover{opacity:1}
+    .cs-tag{font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--rust);margin-bottom:18px}
+    .cs-title{font-family:'Cormorant Garamond',serif;font-size:clamp(60px,10vw,130px);font-weight:300;color:var(--paper);line-height:.88;opacity:0;animation:fadeUp 1s .3s forwards}
+    .cs-title em{font-style:italic;color:var(--rust)}
+    .cs-body{max-width:820px;margin:80px auto;padding:0 60px 120px}
+    .cs-section{margin-bottom:72px}
+    .cs-section h2{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;margin-bottom:22px}
+    .cs-section p{font-size:13px;color:var(--muted);line-height:2;margin-bottom:14px}
+    .cs-img-placeholder{width:100%;aspect-ratio:16/9;background:var(--cream);display:flex;align-items:center;justify-content:center;margin:40px 0;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <a href="../../index.html" class="cs-back">← Portfolio</a>
+  <div class="cs-hero">
+    <p class="cs-tag">Brand Strategy · Web Design · UX · Motion Design</p>
+    <h1 class="cs-title">Caffè<br><em>Matto</em></h1>
+  </div>
+  <div class="cs-body">
+    <div class="cs-section reveal">
+      <h2>Il Progetto</h2>
+      <p>Concept completo per un coffee shop esperienziale. Dal posizionamento strategico alla visual identity, dal competitor analysis alla landing page con motion design. Un brand pensato per chi vive il caffè come rituale culturale.</p>
+    </div>
+    <div class="cs-img-placeholder reveal">Inserisci screenshot brand · assets/images/projects/caffe-moodboard.jpg</div>
+    <div class="cs-section reveal">
+      <h2>Strumenti</h2>
+      <div class="tools-row">
+        <span class="tool-tag">Canva</span><span class="tool-tag">Brand Identity</span><span class="tool-tag">UX Strategy</span>
+        <span class="tool-tag">Motion Design</span><span class="tool-tag">Web Design</span><span class="tool-tag">Competitor Analysis</span>
+      </div>
+    </div>
+  </div>
+  <script src="../../js/main.js"></script>
+  <script src="../../js/animations.js"></script>
+</body>
+</html>
